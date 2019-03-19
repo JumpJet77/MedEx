@@ -2,84 +2,54 @@ package ua.edu.viti.medex.auth;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.*;
-import org.apache.shiro.config.IniSecurityManagerFactory;
-import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.Factory;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.crypto.RandomNumberGenerator;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.Sha256Hash;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 public class Main {
-
-	private static final Logger LOGGER = LogManager.getLogger(Main.class.getName());
+	private static final Logger logger = LogManager.getLogger(Main.class);
+	private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("credentials");
+	private static EntityManager em = emf.createEntityManager();
+	private static SecurityRealm realm = new SecurityRealm();
+	private static Credentials credentials = new Credentials();
 
 	public static void main(String[] args) {
-		LOGGER.info("Hello world!");
+		beginTransaction();
+		logger.error(realm.doGetAuthenticationInfo(new UsernamePasswordToken("admin", "admin")));
+		//createUser();
+		//Credentials newCred = em.find(Credentials.class, 2L);
+		//logger.info(newCred);
+		closeTransaction();
+	}
 
-		Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");
-		SecurityManager securityManager = factory.getInstance();
-		SecurityUtils.setSecurityManager(securityManager);
+	private static void beginTransaction() {
+		em.getTransaction().begin();
+	}
 
-		Subject currentUser = SecurityUtils.getSubject();
+	private static void closeTransaction() {
+		em.getTransaction().commit();
+		em.clear();
+		em.flush();
+		em.close();
+	}
 
-		Session session = currentUser.getSession();
-		session.setAttribute("someKey", "aValue");
-		String value = (String) session.getAttribute("someKey");
-		if (value.equals("aValue")) {
-			LOGGER.info("Retrieved the correct value! [" + value + "]");
-		}
+	private static void createUser() {
+		credentials.setUsername("admin");
+		credentials.setRole(Roles.ADMIN);
 
-		// let's login the current user so we can check against roles and permissions:
-		if (!currentUser.isAuthenticated()) {
-			UsernamePasswordToken token = new UsernamePasswordToken("lonestarr", "vespa");
-			token.setRememberMe(true);
-			try {
-				currentUser.login(token);
-			} catch (UnknownAccountException uae) {
-				LOGGER.info("There is no user with username of " + token.getPrincipal());
-			} catch (IncorrectCredentialsException ice) {
-				LOGGER.info("Password for account " + token.getPrincipal() + " was incorrect!");
-			} catch (LockedAccountException lae) {
-				LOGGER.info("The account for username " + token.getPrincipal() + " is locked.  " +
-						"Please contact your administrator to unlock it.");
-			}
-			// ... catch more exceptions here (maybe custom ones specific to your application?
-			catch (AuthenticationException ae) {
-				//unexpected condition?  error?
-			}
-		}
+		RandomNumberGenerator rng = new SecureRandomNumberGenerator();
+		Object salt = rng.nextBytes();
 
-		//say who they are:
-		//print their identifying principal (in this case, a username):
-		LOGGER.info("User [" + currentUser.getPrincipal() + "] logged in successfully.");
+		String hashedPasswordBase64 = new Sha256Hash("admin", salt, 1024).toBase64();
 
-		//test a role:
-		if (currentUser.hasRole("schwartz")) {
-			LOGGER.info("May the Schwartz be with you!");
-		} else {
-			LOGGER.info("Hello, mere mortal.");
-		}
+		credentials.setPassword(hashedPasswordBase64);
 
-		//test a typed permission (not instance-level)
-		if (currentUser.isPermitted("lightsaber:weild")) {
-			LOGGER.info("You may use a lightsaber ring.  Use it wisely.");
-		} else {
-			LOGGER.info("Sorry, lightsaber rings are for schwartz masters only.");
-		}
-
-		//a (very powerful) Instance Level permission:
-		if (currentUser.isPermitted("winnebago:drive:eagle5")) {
-			LOGGER.info("You are permitted to 'drive' the winnebago with license plate (id) 'eagle5'.  " +
-					"Here are the keys - have fun!");
-		} else {
-			LOGGER.info("Sorry, you aren't allowed to drive the 'eagle5' winnebago!");
-		}
-
-		//all done - log out!
-		currentUser.logout();
-
-		System.exit(0);
+		em.persist(credentials);
 	}
 
 }
