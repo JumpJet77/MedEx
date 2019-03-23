@@ -3,37 +3,38 @@ package ua.edu.viti.medex.auth;
 import javax.persistence.*;
 import java.util.Objects;
 
+@SuppressWarnings("WeakerAccess")
 @Entity
-public class Credentials {
+public class AbstractUser {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_credential", updatable = false, nullable = false)
-	private Long idCredential;
+	@Column(name = "id_user", updatable = false, nullable = false)
+	private Long idUser;
 	@Column(name = "login", nullable = false)
-	private String username;
+	private String login;
 	@Column(name = "password", nullable = false)
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private Roles role;
 
-	public Credentials() {
+	public AbstractUser() {
 	}
 
 	public Long getId() {
-		return idCredential;
+		return idUser;
 	}
 
 	public void setId(Long id) {
-		this.idCredential = id;
+		this.idUser = id;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getLogin() {
+		return login;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setLogin(String username) {
+		this.login = username;
 	}
 
 	public String getPassword() {
@@ -54,9 +55,9 @@ public class Credentials {
 
 	@Override
 	public String toString() {
-		return "Credentials{" +
-				"id=" + idCredential +
-				", username='" + username + '\'' +
+		return "AbstractUser{" +
+				"id=" + idUser +
+				", username='" + login + '\'' +
 				", password='" + password + '\'' +
 				", role=" + role +
 				'}';
@@ -66,12 +67,12 @@ public class Credentials {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		Credentials credentials = (Credentials) o;
-		return getUsername().equals(credentials.getUsername());
+		AbstractUser abstractUser = (AbstractUser) o;
+		return getLogin().equals(abstractUser.getLogin());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getUsername());
+		return Objects.hash(getLogin());
 	}
 }

@@ -6,50 +6,65 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 public class Main {
 	private static final Logger logger = LogManager.getLogger(Main.class);
-	private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("credentials");
-	private static EntityManager em = emf.createEntityManager();
-	private static SecurityRealm realm = new SecurityRealm();
-	private static Credentials credentials = new Credentials();
+	private static final SecurityRealm realm = new SecurityRealm();
+	private static Configuration configuration = new Configuration()
+			.addAnnotatedClass(AbstractUser.class)
+			.configure();
+	private static StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+			.applySettings(configuration.getProperties())
+			.build();
+	private static SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+	private static Session session = sessionFactory.openSession();
+	private static AbstractUser abstractUser = new AbstractUser();
 
 	public static void main(String[] args) {
-		beginTransaction();
-		logger.error(realm.doGetAuthenticationInfo(new UsernamePasswordToken("admin", "admin")));
-		//createUser();
-		//Credentials newCred = em.find(Credentials.class, 2L);
-		//logger.info(newCred);
-		closeTransaction();
-	}
-
-	private static void beginTransaction() {
-		em.getTransaction().begin();
-	}
-
-	private static void closeTransaction() {
-		em.getTransaction().commit();
-		em.clear();
-		em.flush();
-		em.close();
+		logger.error(realm.doGetAuthenticationInfo(new UsernamePasswordToken("admin", "admin")).getCredentials());
+		createUser();
 	}
 
 	private static void createUser() {
-		credentials.setUsername("admin");
-		credentials.setRole(Roles.ADMIN);
-
+		abstractUser.setLogin("puki");
+		abstractUser.setRole(Roles.DOCTOR);
 		RandomNumberGenerator rng = new SecureRandomNumberGenerator();
 		Object salt = rng.nextBytes();
 
-		String hashedPasswordBase64 = new Sha256Hash("admin", salt, 1024).toBase64();
+		String hashedPasswordBase64 = new Sha256Hash("puki", salt, 1024).toBase64();
 
-		credentials.setPassword(hashedPasswordBase64);
+		abstractUser.setPassword(hashedPasswordBase64);
+		session.beginTransaction();
+		session.persist(abstractUser);
+		session.getTransaction().commit();
+	}
 
-		em.persist(credentials);
+	private static void dropUser() {
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<AbstractUser> criteria = builder.createQuery(AbstractUser.class);
+
+		Root<AbstractUser> myObjectRoot = criteria.from(AbstractUser.class);
+
+		Predicate likeRestriction = builder.and(
+				builder.like(myObjectRoot.get("login"), "user")
+		);
+
+		criteria.select(myObjectRoot).where(likeRestriction);
+
+		TypedQuery<AbstractUser> typedQuery = session.createQuery(criteria);
+		AbstractUser dropCred = typedQuery.getSingleResult();
+		logger.error(dropCred);
 	}
 
 }
