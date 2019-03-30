@@ -1,25 +1,23 @@
 package ua.edu.viti.medex.auth;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @SuppressWarnings("WeakerAccess")
-@Entity
-public class AbstractUser {
+@Entity(name = "users")
+public class Users implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_user", updatable = false, nullable = false)
 	private Long idUser;
-	@Column(name = "login", nullable = false)
-	private String login;
+	@Column(name = "email", nullable = false)
+	private String email;
 	@Column(name = "password", nullable = false)
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private Roles role;
-
-	public AbstractUser() {
-	}
 
 	public Long getId() {
 		return idUser;
@@ -29,12 +27,12 @@ public class AbstractUser {
 		this.idUser = id;
 	}
 
-	public String getLogin() {
-		return login;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setLogin(String username) {
-		this.login = username;
+	public void setEmail(String username) {
+		this.email = username;
 	}
 
 	public String getPassword() {
@@ -55,9 +53,9 @@ public class AbstractUser {
 
 	@Override
 	public String toString() {
-		return "AbstractUser{" +
+		return "Users{" +
 				"id=" + idUser +
-				", username='" + login + '\'' +
+				", username='" + email + '\'' +
 				", password='" + password + '\'' +
 				", role=" + role +
 				'}';
@@ -67,12 +65,12 @@ public class AbstractUser {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		AbstractUser abstractUser = (AbstractUser) o;
-		return getLogin().equals(abstractUser.getLogin());
+		Users users = (Users) o;
+		return getEmail().equals(users.getEmail());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getLogin());
+		return Objects.hash(getEmail());
 	}
 }
