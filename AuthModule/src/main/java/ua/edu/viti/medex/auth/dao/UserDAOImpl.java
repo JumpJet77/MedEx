@@ -138,6 +138,7 @@ public class UserDAOImpl implements IUsersService {
 	 * deleting of persisted user
 	 *
 	 * @param id id of user to delete
+	 * @throws NotFoundException if user not exists
 	 */
 
 	@Override
