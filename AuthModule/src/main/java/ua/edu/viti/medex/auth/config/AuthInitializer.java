@@ -1,4 +1,4 @@
-package ua.edu.viti.medex.auth;
+package ua.edu.viti.medex.auth.config;
 
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;

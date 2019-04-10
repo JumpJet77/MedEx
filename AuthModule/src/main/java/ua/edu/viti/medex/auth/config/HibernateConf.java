@@ -1,4 +1,4 @@
-package ua.edu.viti.medex.auth;
+package ua.edu.viti.medex.auth.config;
 
 
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
@@ -30,8 +30,8 @@ public class HibernateConf {
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setDriverClassName("org.postgresql.Driver");
 		dataSource.setUrl("jdbc:postgresql://139.28.37.150:5432/credentials");
-		dataSource.setUsername("jumpjet77");
-		dataSource.setPassword("Dovhoshliubnyi77");
+		dataSource.setUsername("application");
+		dataSource.setPassword("application");
 		return dataSource;
 	}
 
@@ -43,9 +43,8 @@ public class HibernateConf {
 	}
 
 	private final Properties hibernateProperties() {
-
 		Properties hibernateProperties = new Properties();
-		hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+		hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "update");
 		hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
 		return hibernateProperties;
 	}

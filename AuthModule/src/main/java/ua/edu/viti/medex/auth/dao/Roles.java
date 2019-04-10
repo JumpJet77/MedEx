@@ -1,4 +1,4 @@
-package ua.edu.viti.medex.auth;
+package ua.edu.viti.medex.auth.dao;
 
 public enum Roles {
 

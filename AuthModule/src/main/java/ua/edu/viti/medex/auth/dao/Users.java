@@ -1,4 +1,4 @@
-package ua.edu.viti.medex.auth;
+package ua.edu.viti.medex.auth.dao;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,9 +10,9 @@ public class Users implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_user", updatable = false, nullable = false)
+	@Column(name = "id_user", updatable = false, nullable = false, unique = true)
 	private Long idUser;
-	@Column(name = "email", nullable = false)
+	@Column(name = "email", nullable = false, unique = true)
 	private String email;
 	@Column(name = "password", nullable = false)
 	private String password;

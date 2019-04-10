@@ -1,82 +1,130 @@
 package ua.edu.viti.medex.auth.controller;
 
+import javassist.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ua.edu.viti.medex.auth.Users;
+import ua.edu.viti.medex.auth.dao.Users;
+import ua.edu.viti.medex.auth.service.UserServiceImpl;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import java.lang.reflect.MalformedParametersException;
+import java.util.EmptyStackException;
 import java.util.List;
 
-//TODO: add error handlind (baeldung article)
-
+@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
-@RequestMapping("/")
+@CrossOrigin
+@RequestMapping(value = "/")
 public class AuthController {
 
 	private Logger logger = LogManager.getLogger(AuthController.class);
 
 	@Autowired
-	private SessionFactory sessionFactory;
+	UserServiceImpl userService;
 
+	/**
+	 * Get request of root mapping maps to this method
+	 *
+	 * @return list of all persisted users
+	 * @request GET http://139.28.37.150:80/
+	 */
 	@GetMapping
 	public List<Users> findAll() {
-		List<Users> users = sessionFactory.getCurrentSession().createQuery("from users").list();
-		logger.error(sessionFactory);
-		return users;
+		try {
+			return userService.findAll();
+		} catch (EmptyStackException e) {
+			logger.error("Empty list!");
+			return null;
+		}
 	}
+
+	/**
+	 * Get request with param of email (not path variable!)
+	 * @param email email of searched user
+	 * @return searched user
+	 * @request GET http://139.28.37.150:80/?email={email}
+	 */
 
 	@GetMapping(params = "email")
 	public Users findByEmail(@RequestParam(value = "email") String email) {
-		CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
-		CriteriaQuery<Users> criteria = builder.createQuery(Users.class);
-
-		Root<Users> myObjectRoot = criteria.from(Users.class);
-
-		Predicate likeRestriction = builder.and(
-				builder.like(myObjectRoot.get("email"), email)
-		);
-		criteria.select(myObjectRoot).where(likeRestriction);
-
-		TypedQuery<Users> typedQuery = sessionFactory.getCurrentSession().createQuery(criteria);
-		Users user = typedQuery.getSingleResult();
-		logger.error(user);
-		return user;
+		try {
+			return userService.findByEmail(email);
+		} catch (MalformedParametersException e) {
+			logger.error("Malformed email: " + email);
+			return null;
+		}
 	}
+
+	/**
+	 * Get request with searched user id path variable
+	 * @param id id of searched user
+	 * @return searched user
+	 * @request GET http://139.28.37.150:80/?id={id}
+	 */
 
 	@GetMapping(params = "id")
 	public Users findById(@RequestParam(value = "id") Long id) {
-		return sessionFactory.getCurrentSession().get(Users.class, id);
+		try {
+			return userService.findById(id);
+		} catch (NotFoundException e) {
+			logger.error("User with id: " + id + " not found!");
+			return null;
+		}
 	}
 
-	@PostMapping
+	/**
+	 * Post request with body of json of user to sign up (persist)
+	 *
+	 * @param userToCreate user to persist
+	 * @return id of new persisted user
+	 * @request POST http://139.28.37.150:80/signup
+	 */
+
+	@PostMapping(value = "/signup")
 	@ResponseStatus(HttpStatus.CREATED)
-	public Long create(@RequestBody Users userToCreate) {
-		return null;
+	public Long signUp(@RequestBody Users userToCreate) {
+		try {
+			return userService.signUp(userToCreate);
+		} catch (MalformedParametersException e) {
+			logger.error("Malformed email: " + userToCreate.getEmail());
+			return -1L;
+		}
 	}
 
-	@PutMapping(params = "id")
+	/**
+	 * Put request to update existing user
+	 * id should be mentioned in request body, in other new user wil be created
+	 * @param userToUpdate user to update
+	 * @request PUT http://139.28.37.150:80/update
+	 */
+
+	@PutMapping(value = "/update")
 	@ResponseStatus(HttpStatus.OK)
-	public void update(@RequestParam(value = "id") Long id, @RequestBody Users userToUpdate) {
+	public void update(@RequestBody Users userToUpdate) {
+		try {
+			userService.update(userToUpdate);
+		} catch (MalformedParametersException e) {
+			logger.error("Malformed email: " + userToUpdate.getEmail());
+		}
+
 	}
 
-	@DeleteMapping(params = "id")
-	@ResponseStatus(HttpStatus.OK)
-	public void delete(@RequestParam(value = "id") Long id) {
-	}
+	/**
+	 * Delete request to delete existing user
+	 *
+	 * @param id id of user to delete (in path variable)
+	 * @request DELETE http://139.28.37.150:80/{id}
+	 */
 
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public class BadRequestException extends RuntimeException {
-	}
-
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public class NotFoundException extends RuntimeException {
+	@DeleteMapping(value = "/{id}")
+	@ResponseStatus(HttpStatus.FOUND)
+	public void delete(@PathVariable(value = "id") Long id) {
+		try {
+			userService.delete(id);
+		} catch (NotFoundException e) {
+			logger.error("User with id: " + id + " not found!");
+		}
 	}
 }
