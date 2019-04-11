@@ -1,4 +1,4 @@
-package ua.edu.viti.medex.auth.dao;
+package ua.edu.viti.medex.auth.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,12 +12,15 @@ public class Users implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_user", updatable = false, nullable = false, unique = true)
 	private Long idUser;
+
+
+	//TODO: create another login credential instead of email
+
+
 	@Column(name = "email", nullable = false, unique = true)
 	private String email;
 	@Column(name = "password", nullable = false)
 	private String password;
-	@Enumerated(EnumType.STRING)
-	private Roles role;
 
 	public Long getId() {
 		return idUser;
@@ -43,21 +46,12 @@ public class Users implements Serializable {
 		this.password = password;
 	}
 
-	public Roles getRole() {
-		return role;
-	}
-
-	public void setRole(Roles role) {
-		this.role = role;
-	}
-
 	@Override
 	public String toString() {
 		return "Users{" +
 				"id=" + idUser +
 				", username='" + email + '\'' +
 				", password='" + password + '\'' +
-				", role=" + role +
 				'}';
 	}
 
