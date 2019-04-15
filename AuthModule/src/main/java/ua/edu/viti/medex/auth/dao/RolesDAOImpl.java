@@ -5,10 +5,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
-import ua.edu.viti.medex.auth.entities.Role;
 import ua.edu.viti.medex.auth.entities.Roles;
 import ua.edu.viti.medex.auth.entities.Users;
+import ua.edu.viti.medex.auth.entities.enums.Role;
 
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -115,6 +116,8 @@ public class RolesDAOImpl implements IRolesDAO {
 		Matcher matcher = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE).matcher(user.getEmail());
 		Roles roles = new Roles();
 		if (user.getEmail() != null && matcher.find()) {
+			String unEcrPass = user.getPassword();
+			user.setPassword(new BCryptPasswordEncoder().encode(unEcrPass));
 			sessionFactory.getCurrentSession().persist(user);
 			if (role != null && !role.toString().equals("")) {
 				roles.setUser(user);
@@ -140,6 +143,8 @@ public class RolesDAOImpl implements IRolesDAO {
 		Matcher matcher = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE).matcher(userToUpdate.getEmail());
 		Roles role = new Roles();
 		if (userToUpdate.getEmail() != null && matcher.find()) {
+			String unEcrPass = userToUpdate.getPassword();
+			userToUpdate.setPassword(new BCryptPasswordEncoder().encode(unEcrPass));
 			sessionFactory.getCurrentSession().merge(userToUpdate);
 			if (!role.toString().equals("")) {
 				role.setUser(userToUpdate);

@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.edu.viti.medex.auth.dao.RolesDAOImpl;
-import ua.edu.viti.medex.auth.entities.Role;
 import ua.edu.viti.medex.auth.entities.Roles;
 import ua.edu.viti.medex.auth.entities.Users;
+import ua.edu.viti.medex.auth.entities.enums.Role;
 
 import java.lang.reflect.MalformedParametersException;
 import java.util.EmptyStackException;

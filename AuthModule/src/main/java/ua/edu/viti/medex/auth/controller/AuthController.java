@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.edu.viti.medex.auth.entities.Roles;
 import ua.edu.viti.medex.auth.service.RolesServiceImpl;
@@ -107,6 +108,18 @@ public class AuthController {
 		rolesService.delete(id);
 	}
 
+	/**
+	 * signout succsess url
+	 *
+	 * @return OK response, as /logout reditrects to this mapping
+	 * @request GET http://139.28.37.150:8888/logout
+	 */
+	@GetMapping(value = "/signout")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<?> logout() {
+		return new ResponseEntity(HttpStatus.OK);
+	}
+
 	@ExceptionHandler(NotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public String handleAppException(NotFoundException e) {
@@ -114,7 +127,7 @@ public class AuthController {
 	}
 
 	@ExceptionHandler(MalformedParametersException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public String handleAppException(MalformedParametersException e) {
 		return e.getMessage();
 	}

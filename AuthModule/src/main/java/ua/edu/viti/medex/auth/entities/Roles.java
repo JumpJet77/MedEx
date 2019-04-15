@@ -1,5 +1,7 @@
 package ua.edu.viti.medex.auth.entities;
 
+import ua.edu.viti.medex.auth.entities.enums.Role;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -12,7 +14,6 @@ public class Roles implements Serializable {
 	@OneToOne
 	@MapsId
 	private Users user;
-
 	@Enumerated(value = EnumType.STRING)
 	private Role role;
 

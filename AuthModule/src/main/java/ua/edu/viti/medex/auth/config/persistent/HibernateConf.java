@@ -1,4 +1,4 @@
-package ua.edu.viti.medex.auth.config;
+package ua.edu.viti.medex.auth.config.persistent;
 
 
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
