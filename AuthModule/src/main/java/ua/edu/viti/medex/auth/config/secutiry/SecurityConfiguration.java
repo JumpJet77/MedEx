@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import ua.edu.viti.medex.auth.dao.TokenDAOImp;
 
 @EnableWebSecurity
 @Configuration
@@ -25,6 +26,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	RolesDetailsService rolesDetailsService;
+
+	@Autowired
+	TokenDAOImp tokenDAOImp;
 
 	private SimpleUrlAuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
 
@@ -58,6 +62,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.logout()
 				.logoutSuccessUrl("/signout")
 				.invalidateHttpSession(true)
-				.deleteCookies("JSESSIONID");
+				.deleteCookies("JSESSIONID")
+				.and()
+				.rememberMe().rememberMeParameter("remember-me")
+				.tokenRepository(tokenDAOImp).userDetailsService(rolesDetailsService);
 	}
 }

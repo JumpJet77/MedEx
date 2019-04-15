@@ -10,7 +10,6 @@ import java.util.Objects;
 public class Roles implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@OneToOne
 	@MapsId
 	private Users user;
