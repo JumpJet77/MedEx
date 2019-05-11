@@ -5,9 +5,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import ua.edu.viti.medex.auth.entities.Role;
-import ua.edu.viti.medex.auth.entities.Roles;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ua.edu.viti.medex.auth.dao.interfaces.IUsersDAO;
 import ua.edu.viti.medex.auth.entities.Users;
 
 import javax.persistence.Query;
@@ -22,31 +23,36 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Repository
-public class RolesDAOImpl implements IRolesDAO {
+/**
+ * @author Ihor Dovhoshliubnyi
+ * Service implemantaion for User persistent and management
+ * Uses Hibernates session factory for transaction to DB
+ */
+
+@Transactional
+@Service
+public class UsersDAOImpl implements IUsersDAO {
 
 	@Autowired
 	SessionFactory sessionFactory;
 
-	private Logger logger = LogManager.getLogger(RolesDAOImpl.class);
-
+	private Logger logger = LogManager.getLogger(UsersDAOImpl.class);
 
 	/**
-	 * Find all persisted roles with hibernate criteria query
+	 * Find all persisted users with hibernate criteria query
 	 *
-	 * @return list of all roles
+	 * @return list of all users
 	 * @throws EmptyStackException if returned list null or size = 0
 	 */
 
 	@Override
-	public List<Roles> getAll() throws EmptyStackException {
+	public List<Users> getAll() throws EmptyStackException {
 		CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
-		CriteriaQuery<Roles> cq = cb.createQuery(Roles.class);
-		Root<Roles> root = cq.from(Roles.class);
+		CriteriaQuery<Users> cq = cb.createQuery(Users.class);
+		Root<Users> root = cq.from(Users.class);
 		cq.select(root);
 		Query query = sessionFactory.getCurrentSession().createQuery(cq);
-		List<Roles> searchedRolesList = query.getResultList();
-		logger.error(searchedRolesList);
+		List<Users> searchedRolesList = query.getResultList();
 		if ((searchedRolesList != null) || searchedRolesList.size() != 0) {
 			return searchedRolesList;
 		} else {
@@ -54,16 +60,17 @@ public class RolesDAOImpl implements IRolesDAO {
 		}
 	}
 
+
 	/**
-	 * find role by email with hibernate criteria query
+	 * find user by email with hibernate criteria query
 	 *
-	 * @param email email of role
-	 * @return searched role
+	 * @param email email of user
+	 * @return searched user
 	 * @throws MalformedParametersException in case of malformed email
 	 */
 
 	@Override
-	public Roles getRoleByEmail(String email) throws MalformedParametersException, NotFoundException {
+	public Users getUserByEmail(String email) throws MalformedParametersException, NotFoundException {
 		Matcher matcher = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE).matcher(email);
 		if (matcher.find()) {
 			CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
@@ -73,100 +80,91 @@ public class RolesDAOImpl implements IRolesDAO {
 					cb.like(root.get("email"), email)
 			);
 			criteria.select(root).where(likeRestriction);
-
 			TypedQuery<Users> typedQuery = sessionFactory.getCurrentSession().createQuery(criteria);
-			Users user = typedQuery.getSingleResult();
-			return getRoleById(user.getId());
+			return typedQuery.getSingleResult();
 		} else {
 			throw new MalformedParametersException("Wrong email!");
 		}
 	}
 
 	/**
-	 * search role by id
+	 * search user by id
 	 *
-	 * @param id id of persisted searched role
-	 * @return searched persisted role
-	 * @throws NotFoundException if role not found
+	 * @param id id of persisted searched user
+	 * @return searched persisted user
+	 * @throws NotFoundException if user not found
 	 */
 
 	@Override
-	public Roles getRoleById(Long id) throws NotFoundException {
-		Roles roles = sessionFactory.getCurrentSession().get(Roles.class, id);
-		if (roles == null) {
+	public Users getUserById(Long id) throws NotFoundException {
+		Users user = sessionFactory.getCurrentSession().get(Users.class, id);
+		if (user == null) {
 			throw new NotFoundException("User not found");
 		} else {
-			return roles;
+			return user;
 		}
 	}
 
+
 	/**
-	 * signing up user then persists role
-	 * method persists role and user in database
+	 * signing up user then persists user
+	 * method persists user in database
+	 * encrypts password with Spring Security BCrypt password encoder
 	 *
 	 * @param user user to sign up
-	 * @param role role which user should have
-	 * @return id of signed up role and user
+	 * @return id of signed up user or -1 if user with such email already exists
 	 * @throws MalformedParametersException in case of wrong email pattern
 	 */
 
 	@Override
-	public Long signUp(Users user, Role role) throws MalformedParametersException {
+	public Long signUp(Users user) throws MalformedParametersException {
 		Matcher matcher = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE).matcher(user.getEmail());
-		Roles roles = new Roles();
-		if (user.getEmail() != null && matcher.find()) {
-			sessionFactory.getCurrentSession().persist(user);
-			if (role != null && !role.toString().equals("")) {
-				roles.setUser(user);
-				roles.setRole(role);
-				sessionFactory.getCurrentSession().persist(roles);
+		try {
+			getUserByEmail(user.getEmail());
+		} catch (Exception e) {
+			if (user.getEmail() != null && matcher.find()) {
+				String unEcrPass = user.getPassword();
+				user.setPassword(new BCryptPasswordEncoder().encode(unEcrPass));
+				sessionFactory.getCurrentSession().persist(user);
+				return user.getId();
+			} else {
+				throw new MalformedParametersException("Wrong email!");
 			}
-			return user.getId();
-		} else {
-			throw new MalformedParametersException("Wrong email!");
 		}
+		return -1L;
 	}
 
 	/**
-	 * updating of persisted role
+	 * updating of persisted user
 	 *
-	 * @param userToUpdate role to update (must be with id in json)
-	 * @param roleToUpdate role to update (exactly enum)
+	 * @param userToUpdate user to update (must be with id in json)
 	 * @throws MalformedParametersException in case of wrong email pattern
 	 */
-
 	@Override
-	public void update(Users userToUpdate, Role roleToUpdate) throws MalformedParametersException {
+	public void update(Users userToUpdate) throws MalformedParametersException {
 		Matcher matcher = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE).matcher(userToUpdate.getEmail());
-		Roles role = new Roles();
 		if (userToUpdate.getEmail() != null && matcher.find()) {
+			String unEcrPass = userToUpdate.getPassword();
+			userToUpdate.setPassword(new BCryptPasswordEncoder().encode(unEcrPass));
 			sessionFactory.getCurrentSession().merge(userToUpdate);
-			if (!role.toString().equals("")) {
-				role.setUser(userToUpdate);
-				role.setRole(roleToUpdate);
-				logger.error(userToUpdate + " " + role);
-				sessionFactory.getCurrentSession().merge(role);
-			}
 		} else {
 			throw new MalformedParametersException("Wrong email!");
 		}
 	}
 
 	/**
-	 * deleting of persisted role
+	 * deleting of persisted user
 	 *
-	 * @param id id of role to delete
-	 * @throws NotFoundException if role not exists
+	 * @param id id of user to delete
+	 * @throws NotFoundException if user not exists
 	 */
 
 	@Override
 	public void delete(Long id) throws NotFoundException {
 		Users userToDelete = sessionFactory.getCurrentSession().get(Users.class, id);
-		Roles rolesToDelete = sessionFactory.getCurrentSession().get(Roles.class, id);
-		if (userToDelete == null || rolesToDelete == null) {
+		if (userToDelete == null) {
 			throw new NotFoundException("User not found");
 		} else {
-			sessionFactory.getCurrentSession().delete(rolesToDelete);
 			sessionFactory.getCurrentSession().delete(userToDelete);
 		}
 	}

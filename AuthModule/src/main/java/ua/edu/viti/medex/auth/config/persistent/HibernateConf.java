@@ -1,4 +1,4 @@
-package ua.edu.viti.medex.auth.config;
+package ua.edu.viti.medex.auth.config.persistent;
 
 
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
@@ -11,6 +11,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.util.Properties;
+
+/**
+ * @author Ihor Dovhoshliubnyi
+ * Hibernate configuration class
+ * Allow to configure connection to DB without xml with spring annotations
+ * configured Session Factory, so it can be autowired to any class in auth package
+ * configured datasource for DB on external server in Internet
+ * configured Hibernate properties for DB
+ */
 
 @Configuration
 @EnableTransactionManagement
