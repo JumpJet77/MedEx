@@ -6,23 +6,36 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * @author Ihor Dovhoshliubnyi
+ * POJO for representing, and mapping in DB Role entity
+ * Role has id, role itself
+ * @see ua.edu.viti.medex.auth.entities.enums.Role
+ */
+
+@SuppressWarnings("WeakerAccess")
 @Entity(name = "roles")
 public class Roles implements Serializable {
-
 	@Id
-	@OneToOne
-	@MapsId
-	private Users user;
-	@Enumerated(value = EnumType.STRING)
+	@Column(name = "role_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long idRole;
+	@Enumerated(EnumType.STRING)
 	private Role role;
 
-
-	public Users getUser() {
-		return user;
+	public Roles() {
 	}
 
-	public void setUser(Users user) {
-		this.user = user;
+	public Roles(Role role) {
+		this.role = role;
+	}
+
+	public Long getIdRole() {
+		return idRole;
+	}
+
+	public void setIdRole(Long idRole) {
+		this.idRole = idRole;
 	}
 
 	public Role getRole() {
@@ -34,24 +47,25 @@ public class Roles implements Serializable {
 	}
 
 	@Override
-	public String toString() {
-		return "Roles{" +
-				"user=" + user +
-				", role=" + role +
-				'}';
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (!(o instanceof Roles)) return false;
 		Roles roles = (Roles) o;
-		return getUser().equals(roles.getUser()) &&
+		return getIdRole().equals(roles.getIdRole()) &&
 				getRole() == roles.getRole();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getUser(), getRole());
+		return Objects.hash(getIdRole(), getRole());
+	}
+
+	@Override
+	public String toString() {
+		final StringBuffer sb = new StringBuffer("Roles{");
+		sb.append("idRole=").append(idRole);
+		sb.append(", role=").append(role);
+		sb.append('}');
+		return sb.toString();
 	}
 }

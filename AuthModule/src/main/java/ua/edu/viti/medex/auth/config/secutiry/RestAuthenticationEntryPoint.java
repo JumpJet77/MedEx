@@ -9,6 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * @author Ihor Dovhoshliubnyi
+ * Auth Entry Point, which handles unathorized acces to endpoints
+ */
+
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
@@ -16,6 +21,6 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	public void commence(HttpServletRequest request,
 	                     HttpServletResponse response,
 	                     AuthenticationException authException) throws IOException, ServletException {
-		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unathorized");
+		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access denied");
 	}
 }

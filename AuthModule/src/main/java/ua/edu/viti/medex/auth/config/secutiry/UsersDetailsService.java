@@ -10,27 +10,37 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.edu.viti.medex.auth.dao.RolesDAOImpl;
-import ua.edu.viti.medex.auth.entities.Roles;
+import ua.edu.viti.medex.auth.dao.UsersDAOImpl;
+import ua.edu.viti.medex.auth.entities.Users;
 
+/**
+ * @author Ihor Dovhoshliubnyi
+ * User details service to load user from DB to perform login
+ */
 @Service
-public class RolesDetailsService implements UserDetailsService {
+public class UsersDetailsService implements UserDetailsService {
 
 	@Autowired
-	RolesDAOImpl rolesDAO;
+	UsersDAOImpl usersDAO;
 
-	private Logger logger = LogManager.getLogger(RolesDetailsService.class);
+	private Logger logger = LogManager.getLogger(UsersDetailsService.class);
 
-
+	/**
+	 * method for loading user from db by username
+	 *
+	 * @param username email of persisted user
+	 * @return Spring Securities User details
+	 * @throws UsernameNotFoundException if persisted user not found
+	 */
 	@Transactional
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		try {
-			Roles roles = rolesDAO.getRoleByEmail(username);
+			Users user = usersDAO.getUserByEmail(username);
 			User.UserBuilder builder = org.springframework.security.core.userdetails.User.withUsername(username)
 					.disabled(false)
-					.password(roles.getUser().getPassword())
-					.authorities(roles.getRole().toString());
+					.password(user.getPassword())
+					.authorities(user.getRoles());
 			return builder.build();
 		} catch (NotFoundException e) {
 			e.printStackTrace();

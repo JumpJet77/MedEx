@@ -1,41 +1,52 @@
 package ua.edu.viti.medex.auth.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+/**
+ * @author Ihor Dovhoshliubnyi
+ * POJO for representing and maping in DB auth token entity
+ * Token has it`s own id, email of owner date of expiration and validity field
+ * each of this fields, can be extracted from token itself, but need class with field for persisting, and management
+ */
 @Entity(name = "tokens")
-public class Tokens {
+public class Tokens implements Serializable {
 
 	@Id
-	@Column(name = "series", nullable = false)
-	private String series;
-
-	@Column(name = "email", nullable = false)
-	private String user;
-
-	@Column(name = "token", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(updatable = false, nullable = false, unique = true)
+	private Long idToken;
+	@Column(length = 500, nullable = false)
 	private String token;
+	@Column(nullable = false)
+	private String tokenOwnerEmail;
+	@Column(nullable = false)
+	private Date expiration;
+	@Column(nullable = false)
+	private boolean isValid;
 
-	@Column(name = "last_used", nullable = false)
-	private Date lastUsed;
-
-	public String getSeries() {
-		return series;
+	public Tokens() {
+		this.idToken = -1L;
+		this.token = "";
+		this.tokenOwnerEmail = "";
+		this.isValid = false;
 	}
 
-	public void setSeries(String series) {
-		this.series = series;
+	public Tokens(String token, String tokenOwnerEmail, Date expiration, boolean isValid) {
+		this.token = token;
+		this.tokenOwnerEmail = tokenOwnerEmail;
+		this.expiration = expiration;
+		this.isValid = isValid;
 	}
 
-	public String getUser() {
-		return user;
+	public Long getIdToken() {
+		return idToken;
 	}
 
-	public void setUser(String user) {
-		this.user = user;
+	public void setIdToken(Long idToken) {
+		this.idToken = idToken;
 	}
 
 	public String getToken() {
@@ -46,37 +57,56 @@ public class Tokens {
 		this.token = token;
 	}
 
-	public Date getLastUsed() {
-		return lastUsed;
+	public String getTokenOwnerEmail() {
+		return tokenOwnerEmail;
 	}
 
-	public void setLastUsed(Date lastUsed) {
-		this.lastUsed = lastUsed;
+	public void setTokenOwnerEmail(String tokenOwnerEmail) {
+		this.tokenOwnerEmail = tokenOwnerEmail;
+	}
+
+	public Date getExpiration() {
+		return expiration;
+	}
+
+	public void setExpiration(Date expiration) {
+		this.expiration = expiration;
+	}
+
+	public boolean isValid() {
+		return isValid;
+	}
+
+	public void setValid(boolean valid) {
+		isValid = valid;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (!(o instanceof Tokens)) return false;
 		Tokens tokens = (Tokens) o;
-		return getSeries().equals(tokens.getSeries()) &&
-				getUser().equals(tokens.getUser()) &&
+		return isValid() == tokens.isValid() &&
+				getIdToken().equals(tokens.getIdToken()) &&
 				getToken().equals(tokens.getToken()) &&
-				getLastUsed().equals(tokens.getLastUsed());
+				getTokenOwnerEmail().equals(tokens.getTokenOwnerEmail()) &&
+				getExpiration().equals(tokens.getExpiration());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getSeries(), getUser(), getToken(), getLastUsed());
+		return Objects.hash(getIdToken(), getToken(), getTokenOwnerEmail(), getExpiration(), isValid());
 	}
 
 	@Override
 	public String toString() {
-		return "Tokens{" +
-				"series='" + series + '\'' +
-				", user=" + user +
-				", token='" + token + '\'' +
-				", lastUsed=" + lastUsed +
-				'}';
+		final StringBuilder sb = new StringBuilder("Tokens{");
+		sb.append("idToken=").append(idToken);
+		sb.append(", token='").append(token).append('\'');
+		sb.append(", tokenOwnerEmail='").append(tokenOwnerEmail).append('\'');
+		sb.append(", expiration=").append(expiration);
+		sb.append(", isValid=").append(isValid);
+		sb.append('}');
+		return sb.toString();
 	}
 }
