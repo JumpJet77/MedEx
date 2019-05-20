@@ -15,7 +15,7 @@ public class AuthInitializer implements WebApplicationInitializer {
 		AnnotationConfigWebApplicationContext authApplicationContext = new AnnotationConfigWebApplicationContext();
 		authApplicationContext.scan("ua.edu.viti.medex.auth");
 		servletContext.addListener(new ContextLoaderListener(authApplicationContext));
-		ServletRegistration.Dynamic dispatcher = servletContext.addServlet("mvc", new DispatcherServlet(authApplicationContext));
+		ServletRegistration.Dynamic dispatcher = servletContext.addServlet("auth", new DispatcherServlet(authApplicationContext));
 		dispatcher.setLoadOnStartup(1);
 		dispatcher.addMapping("/");
 	}
