@@ -1,6 +1,6 @@
-package ua.edu.viti.medex.auth.entities;
+package ua.edu.viti.medex.main.entities;
 
-import ua.edu.viti.medex.auth.entities.enums.Role;
+import ua.edu.viti.medex.main.entities.enums.Role;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,14 +10,14 @@ import java.util.Objects;
  * @author Ihor Dovhoshliubnyi
  * POJO for representing, and mapping in DB Role entity
  * Role has id, role itself
- * @see ua.edu.viti.medex.auth.entities.enums.Role
+ * @see ua.edu.viti.medex.main.entities.enums.Role
  */
 
 @SuppressWarnings("WeakerAccess")
 @Entity(name = "roles")
 public class Roles implements Serializable {
 	@Id
-	@Column(name = "role_id")
+	@Column(name = "id_role")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idRole;
 	@Enumerated(EnumType.STRING)
