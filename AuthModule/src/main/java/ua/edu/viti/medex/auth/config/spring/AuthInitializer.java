@@ -13,7 +13,7 @@ public class AuthInitializer implements WebApplicationInitializer {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		AnnotationConfigWebApplicationContext authApplicationContext = new AnnotationConfigWebApplicationContext();
-		authApplicationContext.scan("ua.edu.viti.medex.auth");
+		authApplicationContext.scan("ua.edu.viti.medex.auth", "ua.edu.viti.medex.main");
 		servletContext.addListener(new ContextLoaderListener(authApplicationContext));
 		ServletRegistration.Dynamic dispatcher = servletContext.addServlet("auth", new DispatcherServlet(authApplicationContext));
 		dispatcher.setLoadOnStartup(1);

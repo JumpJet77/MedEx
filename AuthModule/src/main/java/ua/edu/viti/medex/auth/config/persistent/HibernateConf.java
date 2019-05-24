@@ -16,8 +16,8 @@ import java.util.Properties;
  * @author Ihor Dovhoshliubnyi
  * Hibernate configuration class
  * Allow to configure connection to DB without xml with spring annotations
- * configured Session Factory, so it can be autowired to any class in auth package
- * configured datasource for DB on external server in Internet
+ * configured Session Factory, so it can be autowired to any class
+ * configured datasource for DB credential on external server in Internet
  * configured Hibernate properties for DB
  */
 
@@ -25,7 +25,7 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class HibernateConf {
 
-	@Bean
+	@Bean(name = "sessionFactory")
 	public LocalSessionFactoryBean sessionFactory() {
 		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
 		sessionFactory.setDataSource(dataSource());
@@ -34,7 +34,7 @@ public class HibernateConf {
 		return sessionFactory;
 	}
 
-	@Bean
+	@Bean(name = "datasource")
 	public DataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setDriverClassName("org.postgresql.Driver");
@@ -44,9 +44,10 @@ public class HibernateConf {
 		return dataSource;
 	}
 
-	@Bean
+	@Bean(name = "hibernateTransactionManager")
 	public PlatformTransactionManager hibernateTransactionManager() {
 		HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+		transactionManager.setDataSource(dataSource());
 		transactionManager.setSessionFactory(sessionFactory().getObject());
 		return transactionManager;
 	}

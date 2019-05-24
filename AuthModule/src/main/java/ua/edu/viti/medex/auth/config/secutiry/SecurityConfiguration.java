@@ -36,14 +36,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
 	@Autowired
-	UsersDetailsService usersDetailsService;
+	PersonDetailsService personDetailsService;
 
 	@Autowired
 	TokenDAOImpl tokenDAO;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(usersDetailsService).passwordEncoder(encoder());
+		auth.userDetailsService(personDetailsService).passwordEncoder(encoder());
 	}
 
 	@Bean
@@ -70,7 +70,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/update").hasRole("DOCTOR, NURSE, ADMIN")
 				.and()
 				.addFilter(new JwtAuthenticationFilter(authenticationManager(), tokenDAO))
-				.addFilter(new JwtAuthorizationFilter(authenticationManager(), tokenDAO))
 				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}

@@ -10,13 +10,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.edu.viti.medex.auth.config.secutiry.SecurityConstants;
 import ua.edu.viti.medex.auth.dao.interfaces.ITokenDAO;
-import ua.edu.viti.medex.auth.entities.Roles;
 import ua.edu.viti.medex.auth.entities.Tokens;
-import ua.edu.viti.medex.auth.entities.enums.Role;
+import ua.edu.viti.medex.main.dao.PersonDAOImpl;
+import ua.edu.viti.medex.main.entities.Roles;
+import ua.edu.viti.medex.main.entities.enums.Role;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -30,17 +32,18 @@ import java.util.*;
  * Implementation for management of jwt tokens
  * Use hibernate's session factory as persistent mechanism and users DAO for receiving user's information
  */
-@Transactional
+@Transactional(transactionManager = "hibernateTransactionManager", value = "hibernateTransactionManager")
 @Service
 public class TokenDAOImpl implements ITokenDAO {
 
 	private final Logger logger = LogManager.getLogger(TokenDAOImpl.class);
 
 	@Autowired
+	@Qualifier("sessionFactory")
 	SessionFactory sessionFactory;
 
 	@Autowired
-	UsersDAOImpl usersDAO;
+	PersonDAOImpl personDAO;
 
 	/**
 	 * Persists token into db as entity
@@ -81,14 +84,14 @@ public class TokenDAOImpl implements ITokenDAO {
 
 	@Override
 	public Tokens refreshToken(Tokens oldToken) throws NotFoundException {
-		if (oldToken == null || (oldToken.getExpiration().getTime() - System.currentTimeMillis() < 0)) {
+		if (oldToken == null || (!oldToken.isValid())) {
 			throw new NotFoundException("Token not found");
 		}
 		sessionFactory.getCurrentSession().delete(getTokenFromEmail(oldToken.getTokenOwnerEmail()));
 		Tokens token = new Tokens();
 		token.setTokenOwnerEmail(oldToken.getTokenOwnerEmail());
 		token.setValid(true);
-		Collection<Roles> roles = usersDAO.getUserByEmail(token.getTokenOwnerEmail()).getCollectionRoles();
+		Collection<Roles> roles = personDAO.getPersonByEmail(token.getTokenOwnerEmail()).getCollectionRoles();
 		Iterator<Roles> iterator = roles.iterator();
 		List<Role> roles1 = new ArrayList<>();
 		while (iterator.hasNext()) {
@@ -115,11 +118,11 @@ public class TokenDAOImpl implements ITokenDAO {
 	}
 
 	/**
-	 * Invalidates existing token in DB if User makes logout
+	 * Invalidates existing token in DB if Person makes logout
 	 *
 	 * @param tokenToInvalidate Token which should be invalidated (as DB entity)
 	 * @return id of invalidated token
-	 * @throws NotFoundException in case of not fouding token
+	 * @throws NotFoundException in case of not founding token
 	 */
 
 	@Override
