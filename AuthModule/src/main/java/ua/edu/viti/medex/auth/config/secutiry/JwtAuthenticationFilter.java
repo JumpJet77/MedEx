@@ -72,8 +72,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			}
 		}
 		GsonJsonParser jsonParser = new GsonJsonParser();
-		Map<String, Object> data = jsonParser.parseMap(body);
-		Map<String, Object> credentials = jsonParser.parseMap((String) data.get("data"));
+		Map<String, Object> credentials = jsonParser.parseMap(body);
 
 		String username = (String) (credentials != null ? credentials.get("username") : null);
 		String password = (String) (credentials != null ? credentials.get("password") : null);
@@ -129,7 +128,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			response.addHeader(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + newToken);
 			return;
 		}
-		if (token.isValid() && (token.getExpiration().getTime() - System.currentTimeMillis() > 900000) && (token.getExpiration().getTime() - System.currentTimeMillis() > 0)) {
+		if (token.isValid() && (token.getExpiration().getTime() - System.currentTimeMillis() > 900000)) {
 			String completeToken = token.getToken();
 			PrintWriter out = response.getWriter();
 			response.setContentType("text/plain");
