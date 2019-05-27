@@ -128,7 +128,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			response.addHeader(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + newToken);
 			return;
 		}
-		if (token.isValid() && (token.getExpiration().getTime() - System.currentTimeMillis() > 900000)) {
+		if ((token.getExpiration().getTime() - System.currentTimeMillis() > 900000)) {
 			String completeToken = token.getToken();
 			PrintWriter out = response.getWriter();
 			response.setContentType("text/plain");
