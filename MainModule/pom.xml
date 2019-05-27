@@ -11,5 +11,4 @@
     <packaging>jar</packaging>
 
     <artifactId>MainModule</artifactId>
-    <version>0.5-beta-1</version>
 </project>

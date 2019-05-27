@@ -84,13 +84,12 @@ public class TokenDAOImpl implements ITokenDAO {
 
 	@Override
 	public Tokens refreshToken(Tokens oldToken) throws NotFoundException {
-		if (oldToken == null || (!oldToken.isValid())) {
+		if (oldToken == null) {
 			throw new NotFoundException("Token not found");
 		}
 		sessionFactory.getCurrentSession().delete(getTokenFromEmail(oldToken.getTokenOwnerEmail()));
 		Tokens token = new Tokens();
 		token.setTokenOwnerEmail(oldToken.getTokenOwnerEmail());
-		token.setValid(true);
 		Collection<Roles> roles = personDAO.getPersonByEmail(token.getTokenOwnerEmail()).getCollectionRoles();
 		Iterator<Roles> iterator = roles.iterator();
 		List<Role> roles1 = new ArrayList<>();
@@ -131,7 +130,7 @@ public class TokenDAOImpl implements ITokenDAO {
 		if (token == null) {
 			throw new NotFoundException("Token not found");
 		}
-		token.setValid(false);
+		token.setExpiration(new Date(System.currentTimeMillis() - 1));
 		sessionFactory.getCurrentSession().merge(token);
 		return token.getIdToken();
 	}

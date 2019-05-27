@@ -24,21 +24,17 @@ public class Tokens implements Serializable {
 	private String tokenOwnerEmail;
 	@Column(nullable = false)
 	private Date expiration;
-	@Column(nullable = false)
-	private boolean isValid;
 
 	public Tokens() {
 		this.idToken = -1L;
 		this.token = "";
 		this.tokenOwnerEmail = "";
-		this.isValid = false;
 	}
 
 	public Tokens(String token, String tokenOwnerEmail, Date expiration, boolean isValid) {
 		this.token = token;
 		this.tokenOwnerEmail = tokenOwnerEmail;
 		this.expiration = expiration;
-		this.isValid = isValid;
 	}
 
 	public Long getIdToken() {
@@ -73,20 +69,12 @@ public class Tokens implements Serializable {
 		this.expiration = expiration;
 	}
 
-	public boolean isValid() {
-		return isValid;
-	}
-
-	public void setValid(boolean valid) {
-		isValid = valid;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof Tokens)) return false;
 		Tokens tokens = (Tokens) o;
-		return isValid() == tokens.isValid() &&
+		return
 				getIdToken().equals(tokens.getIdToken()) &&
 				getToken().equals(tokens.getToken()) &&
 				getTokenOwnerEmail().equals(tokens.getTokenOwnerEmail()) &&
@@ -95,7 +83,7 @@ public class Tokens implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getIdToken(), getToken(), getTokenOwnerEmail(), getExpiration(), isValid());
+		return Objects.hash(getIdToken(), getToken(), getTokenOwnerEmail(), getExpiration());
 	}
 
 	@Override
@@ -105,7 +93,6 @@ public class Tokens implements Serializable {
 		sb.append(", token='").append(token).append('\'');
 		sb.append(", tokenOwnerEmail='").append(tokenOwnerEmail).append('\'');
 		sb.append(", expiration=").append(expiration);
-		sb.append(", isValid=").append(isValid);
 		sb.append('}');
 		return sb.toString();
 	}
