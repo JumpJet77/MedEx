@@ -1,0 +1,26 @@
+
+
+.title_block{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    margin-top: 5vh;
+}
+.title{
+    font-size: 23px;
+    text-transform: uppercase;
+}
+
+.main_block{
+    width: 90%;
+    margin-top: 2vh;
+    margin-bottom: 6vh;
+    height: 100vh;
+}
+
+.main_block_item{
+    list-style-type: decimal;
+    font-size: 20px;
+    text-transform: uppercase;
+    margin-top: 15px;
+}

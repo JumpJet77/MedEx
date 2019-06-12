@@ -1,0 +1,68 @@
+.userCard{
+    width: 70%;
+    margin: 0 auto;
+    height: auto;
+}
+
+li{
+    list-style: none;
+    color: '#3baeab'
+}
+
+.main_info{
+    width: 100%;
+    background: white;
+    min-height: 800px;
+}
+
+.main_info_item{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: inherit;
+    margin-left: 10px;
+}
+
+.mt10xp{
+    margin-top: 10px;
+}
+
+
+.deatailsListItem{
+    list-style-type: decimal;
+    color: #3baeab;
+}
+
+.btn_add{
+    width: 30%;
+    margin-bottom: 20px; 
+}
+
+.addApealPanel{
+    background: red;
+}
+
+.addTreatmentPanel{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    align-items: center;
+}
+
+.addTreatmentPanelItems{
+    width: 70%;
+}
+
+.detailsArea{
+    width: 100%;
+}
+
+th{
+    text-align: center;
+    padding: 18px 14px 18px 14px; 
+}
+
+td{
+    text-align: center;
+}

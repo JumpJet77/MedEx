@@ -1,0 +1,12 @@
+.moreInfoRegistration{
+    padding-top: 16px;
+    padding-left: 16px;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 24px;
+}
+
+li{
+    list-style: none;
+    color: '#3baeab'
+}
