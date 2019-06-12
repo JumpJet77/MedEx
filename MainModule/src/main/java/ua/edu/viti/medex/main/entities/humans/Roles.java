@@ -1,4 +1,4 @@
-package ua.edu.viti.medex.main.entities;
+package ua.edu.viti.medex.main.entities.humans;
 
 import ua.edu.viti.medex.main.entities.enums.Role;
 

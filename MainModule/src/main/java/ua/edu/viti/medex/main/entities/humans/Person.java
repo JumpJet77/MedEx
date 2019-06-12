@@ -1,6 +1,7 @@
 package ua.edu.viti.medex.main.entities.humans;
 
-import ua.edu.viti.medex.main.entities.Roles;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -18,6 +19,8 @@ public class Person implements Serializable {
 	protected Long id;
 	@Column(name = "email", nullable = false)
 	protected String email;
+	@JsonIgnore
+	@JsonDeserialize
 	@Column(name = "password", nullable = false)
 	protected String password;
 	@Column(name = "first_name", nullable = false)
@@ -118,6 +121,7 @@ public class Person implements Serializable {
 		this.birthDate = birthDate;
 	}
 
+	@JsonIgnore
 	public Collection<Roles> getCollectionRoles() {
 		return roles;
 	}

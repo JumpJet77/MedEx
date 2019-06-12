@@ -17,8 +17,8 @@ import ua.edu.viti.medex.auth.config.secutiry.SecurityConstants;
 import ua.edu.viti.medex.auth.dao.interfaces.ITokenDAO;
 import ua.edu.viti.medex.auth.entities.Tokens;
 import ua.edu.viti.medex.main.dao.PersonDAOImpl;
-import ua.edu.viti.medex.main.entities.Roles;
 import ua.edu.viti.medex.main.entities.enums.Role;
+import ua.edu.viti.medex.main.entities.humans.Roles;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -98,7 +98,7 @@ public class TokenDAOImpl implements ITokenDAO {
 		}
 		byte[] signingKey = SecurityConstants.JWT_SECRET.getBytes();
 		logger.error(Arrays.deepToString(roles.toArray()));
-		Date expiration = new Date(System.currentTimeMillis() + 7200000);
+		Date expiration = new Date(System.currentTimeMillis() + 86400000);
 		String newToken = Jwts.builder()
 				.signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
 				.setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)

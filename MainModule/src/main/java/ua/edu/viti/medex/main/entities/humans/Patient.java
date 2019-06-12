@@ -9,7 +9,6 @@ import java.util.Objects;
 public class Patient implements Serializable {
 
 	@Id
-	@MapsId
 	@OneToOne(fetch = FetchType.EAGER, targetEntity = Person.class)
 	private Person person;
 	@Column(name = "nationality")

@@ -20,8 +20,4 @@ public interface IPatientDAO {
 
 	Long signUpPatient(Patient patient) throws MalformedParametersException;
 
-	void update(Patient patientToUpdate) throws MalformedParametersException;
-
-	void delete(Long id) throws NotFoundException;
-
 }

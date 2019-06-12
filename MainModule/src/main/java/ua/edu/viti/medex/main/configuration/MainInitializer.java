@@ -13,7 +13,6 @@ public class MainInitializer implements WebApplicationInitializer {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		AnnotationConfigWebApplicationContext mainApplicationContext = new AnnotationConfigWebApplicationContext();
-		mainApplicationContext.scan("ua.edu.viti.medex.main");
 		servletContext.addListener(new ContextLoaderListener(mainApplicationContext));
 		ServletRegistration.Dynamic dispatcher = servletContext.addServlet("main", new DispatcherServlet(mainApplicationContext));
 		dispatcher.setLoadOnStartup(1);

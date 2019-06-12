@@ -114,7 +114,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 					.setIssuer(SecurityConstants.TOKEN_ISSUER)
 					.setAudience(SecurityConstants.TOKEN_AUDIENCE)
 					.setSubject(user.getUsername())
-					.setExpiration(new Date(System.currentTimeMillis() + 7200000))
+					.setExpiration(new Date(System.currentTimeMillis() + 86400000))
 					.claim("role", roles)
 					.compact();
 

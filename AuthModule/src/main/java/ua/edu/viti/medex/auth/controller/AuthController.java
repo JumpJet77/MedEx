@@ -16,11 +16,9 @@ import ua.edu.viti.medex.auth.entities.Tokens;
 
 import java.util.Date;
 
-//TODO: (in future) add more detailed exception handlers
-
 /**
  * @author Ihor Dovhoshliubnyi
- * Contoroller with endpoints for auth management (token and users management)
+ * Contoroller with endpoints for auth management (token management)
  */
 
 @SuppressWarnings({"SpringJavaAutowiredFieldsWarningInspection", "JavaDoc"})
@@ -34,7 +32,7 @@ public class AuthController {
 	TokenDAOImpl tokenDAO;
 
 	/**
-	 * signout succsess url
+	 * sign out success url
 	 * invalidates token which was used to perform operations
 	 * @param token Token of person, which should be invalidated
 	 * @return OK response if token successfully invalidated to this mapping or NOT_FOUND if token not found in DB

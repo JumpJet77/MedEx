@@ -7,7 +7,7 @@
     <groupId>ua.edu.viti</groupId>
     <artifactId>MedEx</artifactId>
     <packaging>pom</packaging>
-    <version>0.5-beta-1</version>
+    <version>RELEASE</version>
     <modules>
         <module>AuthModule</module>
         <module>MainModule</module>
@@ -190,6 +190,17 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
         </dependency>
     </dependencies>
 </project>

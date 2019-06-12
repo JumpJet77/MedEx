@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.edu.viti.medex.main.dao.interfaces.IPersonDAO;
 import ua.edu.viti.medex.main.entities.humans.Person;
 
@@ -15,7 +16,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 import java.lang.reflect.MalformedParametersException;
 import java.util.EmptyStackException;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  */
 
 
-@Transactional
+@Transactional(transactionManager = "mainHibernateTransactionManager", value = "mainHibernateTransactionManager")
 @Service
 public class PersonDAOImpl implements IPersonDAO {
 
@@ -114,15 +114,5 @@ public class PersonDAOImpl implements IPersonDAO {
 			}
 		}
 		return -1L;
-	}
-
-	@Override
-	public void update(Person personToUpdate) throws MalformedParametersException {
-
-	}
-
-	@Override
-	public void delete(Long id) throws NotFoundException {
-
 	}
 }

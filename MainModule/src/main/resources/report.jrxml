@@ -1,0 +1,73 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN"
+        "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+
+<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+   http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="report2" pageWidth="595" pageHeight="842"
+              columnWidth="555" leftMargin="20" rightMargin="20"
+              topMargin="20" bottomMargin="20">
+
+    <style isDefault="true" name="Basic" pdfFontName="C:\Users\Admin\Downloads\times-new-roman.ttf" pdfEncoding="Cp1251"
+           isPdfEmbedded="true" forecolor="#fffff"/>
+
+
+    <field name="Id" class="java.lang.Long">
+        <fieldDescription>id</fieldDescription>
+    </field>
+
+    <field name="LastName">
+        <fieldDescription>firstName</fieldDescription>
+    </field>
+
+    <field name="FirstName">
+        <fieldDescription>lastName</fieldDescription>
+    </field>
+
+    <field name="MiddleName">
+        <fieldDescription>middleName</fieldDescription>
+    </field>
+
+    <detail>
+        <band height="15">
+
+            <textField>
+                <reportElement x="0" y="0" width="20" height="15"/>
+
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+
+                <textFieldExpression class="java.lang.Long">
+                    <![CDATA[$F{Id}]]>
+                </textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement x="30" y="0" width="100" height="15"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle"/>
+                <textFieldExpression class="java.lang.String">
+                    <![CDATA[$F{LastName}]]>
+                </textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement x="130" y="0" width="100" height="15"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression class="java.lang.String">
+                    <![CDATA[$F{FirstName}]]>
+                </textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement x="240" y="0" width="100" height="15"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression class="java.lang.String">
+                    <![CDATA[$F{MiddleName}]]>
+                </textFieldExpression>
+            </textField>
+
+        </band>
+    </detail>
+
+</jasperReport>

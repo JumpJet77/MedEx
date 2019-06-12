@@ -22,8 +22,4 @@ public interface IPersonDAO {
 
 	Long signUpPerson(Person person) throws MalformedParametersException;
 
-	void update(Person personToUpdate) throws MalformedParametersException;
-
-	void delete(Long id) throws NotFoundException;
-
 }
